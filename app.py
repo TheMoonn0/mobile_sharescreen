@@ -16,31 +16,23 @@ BACKEND = st.text_input(
 ROOM = st.text_input("Room ID", value="room1")
 
 backend = BACKEND.rstrip("/")
-
-sender_url = f"{backend}/send/{ROOM}"
 upload_wss = backend.replace("https://", "wss://").replace("http://", "ws://") + f"/upload/{ROOM}"
 frame_url = f"{backend}/frame/{ROOM}"
 
 col1, col2 = st.columns([1, 2])
 
 with col1:
-    st.subheader("QR สำหรับ iPhone")
+    st.subheader("QR สำหรับ iOS ReplayKit App")
+    st.write("ให้แอป iPhone ที่ใช้ ReplayKit ส่ง JPEG frame มาที่ URL นี้")
+    st.code(upload_wss)
 
-    st.write("อันนี้ใช้สแกนด้วย Camera/Safari เพื่อทดสอบส่งกล้องเข้า Streamlit")
-    st.code(sender_url)
-
-    qr = qrcode.make(sender_url)
+    qr = qrcode.make(upload_wss)
     buf = BytesIO()
     qr.save(buf, format="PNG")
     st.image(buf.getvalue(), width=280)
 
-    st.divider()
-
-    st.write("ถ้าใช้ iOS ReplayKit app จริง ให้ส่งภาพมาที่ WebSocket นี้")
-    st.code(upload_wss)
-
 with col2:
-    st.subheader("Live View")
+    st.subheader("Live iPhone Screen")
     screen = st.empty()
 
     while True:
@@ -51,7 +43,7 @@ with col2:
                 img = Image.open(BytesIO(res.content))
                 screen.image(img, use_container_width=True)
             else:
-                screen.info("Waiting for mobile stream...")
+                screen.info("Waiting for iPhone ReplayKit stream...")
 
         except Exception as e:
             screen.warning(f"Cannot connect backend: {e}")
