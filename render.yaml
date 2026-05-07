@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: iphone-mediamtx
+    env: docker
+    repo: https://github.com/bluenviron/mediamtx
+    plan: free
